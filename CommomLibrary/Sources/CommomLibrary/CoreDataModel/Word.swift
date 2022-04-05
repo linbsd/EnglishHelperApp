@@ -8,28 +8,48 @@
 import Foundation
 
 public struct WordViewModel{
-    public let name:String
+    public let name: String
     public let picture: Picture?
+    public let pictureName : String
+    public let topicName : String
+    public let chapterName : String
     public let audioUrl : String
+    public let pictureUrl : String
+    public let words: String
 }
 
 public extension Word{
+    @objc
+    var topicSection : String{
+        let topicName = self.picture?.topic?.name ?? "Unknow"
+        return topicName
+    }
+    
     var viewModel: WordViewModel {
+        let fileName = self.name ?? ""
+        let pictureName = self.picture?.name ?? ""
+        let topicName = self.picture?.topic?.name ?? ""
+        let chapterName = self.picture?.topic?.chapter?.name ?? ""
+        let wordSet = self.picture?.words as? Set<Word> ?? []
+        let wordArray = Array(wordSet)
+        var words = ""
+        if wordArray.count > 0{
+            for i in 0..<wordArray.count-1{
+                words += wordArray[i].name ?? ""
+                words += " / "
+            }
+        }
+        words += wordArray[wordArray.count-1].name ?? ""
+        
         return WordViewModel(
-            name: self.name ?? "Unknow",
+            name: fileName,
             picture: self.picture,
-            audioUrl: {
-                if let filename = self.name,
-                   let picture = self.picture,
-                   let topic = picture.topic,
-                   let topicname = topic.name,
-                   let chapter = topic.chapter,
-                   let chaptername = chapter.name{
-                    return "https://raw.githubusercontent.com/HDCodePractice/EnglishHelper/main/res/audio/\(chaptername)/\(topicname)/\(filename).wav"
-                }else{
-                    return ""
-                }
-            }()
+            pictureName: pictureName,
+            topicName: topicName,
+            chapterName: chapterName,
+            audioUrl: "https://raw.githubusercontent.com/HDCodePractice/EnglishHelper/main/res/audio/\(chapterName)/\(topicName)/\(fileName).wav",
+            pictureUrl : "https://raw.githubusercontent.com/HDCodePractice/EnglishHelper/main/res/pictures/\(chapterName)/\(topicName)/\(pictureName)".urlEncoded(),
+            words: words
         )
     }
 }

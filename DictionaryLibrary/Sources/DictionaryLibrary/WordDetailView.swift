@@ -13,14 +13,15 @@ struct WordDetailView: View {
     
     var body: some View {
         VStack{
+            HStack{
             Text(item.viewModel.name)
                 .font(.largeTitle)
             PlayAudio(url: item.viewModel.audioUrl,isAutoPlay: false)
-            if let url = item.picture?.viewModel.path{
-                PictureView(url: URL(string: url))
-                    .shadow(radius: 10)
-                    .padding()
             }
+            Text(item.viewModel.words)
+            PictureView(url: URL(string: item.viewModel.pictureUrl))
+                .shadow(radius: 10)
+                .padding()
             Text((item.viewModel.picture?.viewModel.topic?.viewModel.chapter?.viewModel.name)!)
             Text((item.viewModel.picture?.viewModel.topic?.viewModel.name)!)
         }
