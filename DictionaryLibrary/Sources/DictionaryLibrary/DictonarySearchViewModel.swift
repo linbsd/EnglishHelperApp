@@ -8,21 +8,61 @@
 import Foundation
 import CoreData
 import CommomLibrary
+import RealmSwift
+import OSLog
 
 class DictonarySearchViewModel: ObservableObject{
-    @Published var loadStatue : LoadStatue = .load
+    private var realmController : RealmController
     
-    private let jsonURL = "https://raw.githubusercontent.com/HDCodePractice/EnglishHelper/main/res/picture.json"
+    @Published var isOnlyShowNewWord = false
+        
+    init(isPreview:Bool=false){
+        if isPreview{
+            realmController = RealmController.preview
+        }else{
+            realmController = RealmController.shared
+        }
+    }
     
-    func fetchData(viewContext: NSManagedObjectContext){
-        Task{
-            await PersistenceController.fetchData(url: jsonURL, viewContext: viewContext)
-            self.loadStatue = .finish
+    @MainActor
+    func fetchData() async{
+        await realmController.fetchData()
+    }
+    
+    @MainActor
+    func cleanAllNew() async{
+        if let localRealm = realmController.localRealm{
+            let words = localRealm.objects(Word.self).where{
+                $0.isNew == true
+            }
+            do{
+                try localRealm.write{
+                    for word in words{
+                        word.isNew=false
+                    }
+                }
+            }catch{
+                Logger().error("Error cleanAllNew Word to Realm:\(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @MainActor
+    func makeAllToNew() async{
+        if let localRealm = realmController.localRealm{
+            let words = localRealm.objects(Word.self).where{
+                $0.isNew == false
+            }
+            do{
+                try localRealm.write{
+                    for word in words{
+                        word.isNew=true
+                    }
+                }
+            }catch{
+                Logger().error("Error makeAllToNew Word to Realm:\(error.localizedDescription)")
+            }
         }
     }
 }
 
-enum LoadStatue{
-    case load
-    case finish
-}

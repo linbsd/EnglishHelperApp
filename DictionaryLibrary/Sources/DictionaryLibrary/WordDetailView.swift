@@ -7,23 +7,53 @@
 
 import SwiftUI
 import CommomLibrary
+import RealmSwift
+import TranslateView
 
 struct WordDetailView: View {
-    var item : Word
+    @ObservedRealmObject var item : Word
+    @State var text : String?
     
     var body: some View {
         VStack{
-            HStack{
-            Text(item.viewModel.name)
+            Text(item.name)
                 .font(.largeTitle)
-            PlayAudio(url: item.viewModel.audioUrl,isAutoPlay: false)
+            HStack{
+                PlayAudio(url: item.audioUrl,isAutoPlay: false)
+                Button(){
+                    text = "This is \(item.name)"
+                }label: {
+                    Image(systemName: "questionmark.circle")
+                        .font(.title2)
+                }.translateSheet($text)
+                CopyToClipboard(putString: item.name)
             }
-            Text(item.viewModel.words)
-            PictureView(url: URL(string: item.viewModel.pictureUrl))
+            Text(item.wordsTitle)
+            PictureView(url: URL(string: item.pictureUrl))
                 .shadow(radius: 10)
                 .padding()
-            Text((item.viewModel.picture?.viewModel.topic?.viewModel.chapter?.viewModel.name)!)
-            Text((item.viewModel.picture?.viewModel.topic?.viewModel.name)!)
+            Text(item.chapterName)
+            Text(item.topicName)
         }
+        .onDisappear {
+            $item.isNew.wrappedValue = false
+        }
+    }
+}
+
+
+
+struct testWordDetailView: View {
+    @ObservedResults(Word.self) var words
+    
+    var body: some View {
+        WordDetailView(item: words.first!)
+    }
+}
+
+struct testWordDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        let _ = RealmController.preview
+        return testWordDetailView()
     }
 }

@@ -11,7 +11,7 @@
 "Are you ready to test out English words?" = "准备好开始单词游戏了吗？";
 
 /* No comment provided by engineer. */
-"Browse Dictionary" = "浏览词典";
+"Dictionary" = "词典";
 
 /* No comment provided by engineer. */
 "Congratulations, you completed the game!" = "恭喜你，你完成了这个游戏！";
@@ -29,7 +29,7 @@
 "Grammar Book" = "语法手册";
 
 /* No comment provided by engineer. */
-"Let't go!" = "开始游戏";
+"Let's go!" = "开始游戏";
 
 /* No comment provided by engineer. */
 "Load Data..." = "加载数据中...";
